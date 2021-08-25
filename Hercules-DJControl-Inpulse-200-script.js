@@ -34,6 +34,7 @@ DJCi200.init = function () {
     DJCi200.initDeck('[Channel1]')
     DJCi200.initDeck('[Channel2]')
 }
+
 DJCi200.shutdown = function() {}
 
 DJCi200.deck = {
@@ -77,11 +78,14 @@ DJCi200.deckToggleButton = function (channel, control, value, status, group) {
             deckNumber -= 2 // This is a shortcut for 'deckNumber = decknumber - 2'
         }
         DJCi200.deck[group] = '[Channel' + deckNumber + ']'
-        DJCi200.initDeck(DJCi200.deck[group]) // Initialize the new deck. This function is defined below.
+        DJCi200.initDeck(DJCi200.deck[group], channel) // Initialize the new deck. This function is defined below.
     }
 }
 
-DJCi200.initDeck = function (group) { // This function is not mapped to a MIDI signal; it is only called by this script in the init and deckToggleButton functions
+
+
+
+DJCi200.initDeck = function (group, channel) { // This function is not mapped to a MIDI signal; it is only called by this script in the init and deckToggleButton functions
     // Execute code to set up the controller for manipulating a deck
     // Putting this code in a function allows you to call the same code from the script's init function and the deckToggleButton function without having to copy and paste code
 
@@ -92,8 +96,8 @@ DJCi200.initDeck = function (group) { // This function is not mapped to a MIDI s
     } else {
         disconnectDeck -= 2
     }
-    DJCi200.connectDeckControls('[Channel'+disconnectDeck+']', true) // disconnect old deck's Mixxx controls from LEDs. This function is defined below.
-    DJCi200.connectDeckControls(group) // connect new deck's Mixxx controls to LEDs
+    DJCi200.connectDeckControls(channel, '[Channel'+disconnectDeck+']', true) // disconnect old deck's Mixxx controls from LEDs. This function is defined below.
+    DJCi200.connectDeckControls(channel, group) // connect new deck's Mixxx controls to LEDs
 
     // Toggle LED that indicates which deck is being controlled
     midi.sendShortMsg(
@@ -104,19 +108,46 @@ DJCi200.initDeck = function (group) { // This function is not mapped to a MIDI s
     )
 }
 
-DJCi200.connectDeckControls = function (group, remove) { // This function is not mapped to a MIDI signal; it is only called by this script in the initDeck function below
+DJCi200.connectDeckControls = function (channel, group, remove) { // This function is not mapped to a MIDI signal; it is only called by this script in the initDeck function below
     // This function either connects or disconnects automatic reactions to changes in Mixxx (see wiki section above), depending on the value of the 'remove' parameter
     // Putting this in its own function allows the same code to be reused for both connecting and disconnecting
     // This is particularly helpful when the list of Mixxx controls connected to LEDs is long
     
     remove = (typeof remove !== 'undefined') ? remove : false // If the 'remove' parameter is not passed to this function, set remove = false
     var controlsToFunctions = { // This hash table maps Mixxx controls to the script functions (not shown in this example) that control LEDs that react to changes in those controls
-        'play': 'DJCi200.playButtonLED',
-        'sync_enabled': 'DJCi200.syncLED',
-        'pfl': 'DJCi200.headphoneLED'
+        'pfl': 'PFL',
+        'beatloop_4_enabled': 'BEATLOOP_4_ENABLED',
+        'beatlooproll_1_activate': 'BEATLOOPROLL_1_ACTIVATE',
+        'beatlooproll_2_activate': 'BEATLOOPROLL_2_ACTIVATE',
+        'beatlooproll_4_activate': 'BEATLOOPROLL_4_ACTIVATE',
+        'beatlooproll_8_activate': 'BEATLOOPROLL_8_ACTIVATE',
+        'cue_indicator': 'CUE_INDICATOR',
+        'end_of_track': 'END_OF_TRACK',
+        'hotcue_1_enabled': 'HOTCUE_1_ENABLED',
+        'hotcue_2_enabled': 'HOTCUE_2_ENABLED',
+        'hotcue_3_enabled': 'HOTCUE_3_ENABLED',
+        'hotcue_4_enabled': 'HOTCUE_4_ENABLED',
+        'play_indicator': 'PLAY_INDICATOR',
+        'start_play': 'START_PLAY',
+        'sync_enabled': 'SYNC_ENABLED'
+	}
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		engine.connectControl('[EffectRack1_EffectUnit1]', 'group_'+group+'_enable', EFFECT1_ENABLE, remove)
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		engine.connectControl('[EffectRack1_EffectUnit2]', 'group_'+group+'_enable', EFFECT2_ENABLE, remove)
+	}
+        
+        if (! remove) {
+        	if (group=='[Channel1]'||group=='[Channel3]') {
+			engine.trigger('[EffectRack1_EffectUnit1]', 'group_'+group+'_enable')
+		}
+		if (group=='[Channel2]'||group=='[Channel4]') {
+			engine.trigger('[EffectRack1_EffectUnit2]', 'group_'+group+'_enable')
+		}
+        }
+        
         // ... and any other functions that react to changes in Mixxx controls for a deck
-    }
-    
     for (var control in controlsToFunctions) { // For each property (key: value pair) in controlsToFunctions, control = that property of controlsToFunctions
                                                // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
         engine.connectControl(group, control, controlsToFunctions[control], remove)
@@ -125,6 +156,356 @@ DJCi200.connectDeckControls = function (group, remove) { // This function is not
         }
     }
 }
+
+function EFFECT1_ENABLE(value, _group, control, channel) {
+	if (engine.getValue(_group, control)) {
+			midi.sendShortMsg(0x96, 0x23, 0x7f);
+			midi.sendShortMsg(0x96, 0x2B, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x23, 0x00);
+			midi.sendShortMsg(0x96, 0x2B, 0x00);
+		}
+}
+
+function EFFECT2_ENABLE(value, _group, control, channel) {
+	if (engine.getValue(_group, control)) {
+			midi.sendShortMsg(0x97, 0x23, 0x7f);
+			midi.sendShortMsg(0x97, 0x2B, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x23, 0x00);
+			midi.sendShortMsg(0x97, 0x2B, 0x00);
+		}
+}
+
+
+
+function PFL(value, group, control, channel) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'pfl')) {
+			midi.sendShortMsg(0x91, 0x0C, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x0C, 0x00);
+		}
+	}
+	
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'pfl')) {
+			midi.sendShortMsg(0x92, 0x0C, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x0C, 0x00);
+		}
+	}
+}
+
+function BEATLOOP_4_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'beatloop_4_enabled')) {
+			midi.sendShortMsg(0x91, 0x09, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x09, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'beatloop_4_enabled')) {
+			midi.sendShortMsg(0x92, 0x09, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x09, 0x00);
+		}
+	}
+	
+}
+
+function BEATLOOPROLL_1_ACTIVATE(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'beatlooproll_1_activate')) {
+			midi.sendShortMsg(0x96, 0x10, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x10, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'beatlooproll_1_activate')) {
+			midi.sendShortMsg(0x97, 0x10, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x10, 0x00);
+		}
+	}
+	
+}
+
+function BEATLOOPROLL_2_ACTIVATE(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'beatlooproll_2_activate')) {
+			midi.sendShortMsg(0x96, 0x11, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x11, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'beatlooproll_2_activate')) {
+			midi.sendShortMsg(0x97, 0x11, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x11, 0x00);
+		}
+	}
+	
+}
+
+function BEATLOOPROLL_4_ACTIVATE(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'beatlooproll_4_activate')) {
+			midi.sendShortMsg(0x96, 0x12, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x12, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'beatlooproll_4_activate')) {
+			midi.sendShortMsg(0x97, 0x12, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x12, 0x00);
+		}
+	}
+	
+}
+
+function BEATLOOPROLL_8_ACTIVATE(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'beatlooproll_8_activate')) {
+			midi.sendShortMsg(0x96, 0x13, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x13, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'beatlooproll_8_activate')) {
+			midi.sendShortMsg(0x97, 0x13, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x13, 0x00);
+		}
+	}
+	
+}
+
+function CUE_INDICATOR(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'cue_indicator')) {
+			midi.sendShortMsg(0x91, 0x06, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x06, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'cue_indicator')) {
+			midi.sendShortMsg(0x92, 0x06, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x06, 0x00);
+		}
+	}
+	
+}
+
+function END_OF_TRACK(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'end_of_track')) {
+			midi.sendShortMsg(0x91, 0x1C, 0x7f);
+			midi.sendShortMsg(0x91, 0x1C, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x1D, 0x00);
+			midi.sendShortMsg(0x91, 0x1D, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'end_of_track')) {
+			midi.sendShortMsg(0x92, 0x1C, 0x7f);
+			midi.sendShortMsg(0x92, 0x1D, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x1C, 0x00);
+			midi.sendShortMsg(0x92, 0x1D, 0x00);
+		}
+	}
+	
+}
+
+
+function HOTCUE_1_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'hotcue_1_enabled')) {
+			midi.sendShortMsg(0x96, 0x00, 0x7f);
+			midi.sendShortMsg(0x96, 0x08, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x00, 0x00);
+			midi.sendShortMsg(0x96, 0x08, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'hotcue_1_enabled')) {
+			midi.sendShortMsg(0x97, 0x00, 0x7f);
+			midi.sendShortMsg(0x97, 0x08, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x00, 0x00);
+			midi.sendShortMsg(0x97, 0x08, 0x00);
+		}
+	}
+	
+}
+
+function HOTCUE_2_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'hotcue_2_enabled')) {
+			midi.sendShortMsg(0x96, 0x01, 0x7f);
+			midi.sendShortMsg(0x96, 0x09, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x01, 0x00);
+			midi.sendShortMsg(0x96, 0x09, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'hotcue_2_enabled')) {
+			midi.sendShortMsg(0x97, 0x01, 0x7f);
+			midi.sendShortMsg(0x97, 0x09, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x01, 0x00);
+			midi.sendShortMsg(0x97, 0x09, 0x00);
+		}
+	}
+	
+}
+
+function HOTCUE_3_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'hotcue_3_enabled')) {
+			midi.sendShortMsg(0x96, 0x02, 0x7f);
+			midi.sendShortMsg(0x96, 0x0A, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x02, 0x00);
+			midi.sendShortMsg(0x96, 0x0A, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'hotcue_3_enabled')) {
+			midi.sendShortMsg(0x97, 0x02, 0x7f);
+			midi.sendShortMsg(0x97, 0x0A, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x02, 0x00);
+			midi.sendShortMsg(0x97, 0x0A, 0x00);
+		}
+	}
+	
+}
+
+function HOTCUE_4_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'hotcue_4_enabled')) {
+			midi.sendShortMsg(0x96, 0x03, 0x7f);
+			midi.sendShortMsg(0x96, 0x0B, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x96, 0x03, 0x00);
+			midi.sendShortMsg(0x96, 0x0B, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'hotcue_4_enabled')) {
+			midi.sendShortMsg(0x97, 0x03, 0x7f);
+			midi.sendShortMsg(0x97, 0x0B, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x97, 0x03, 0x00);
+			midi.sendShortMsg(0x97, 0x0B, 0x00);
+		}
+	}
+	
+}
+
+
+function PLAY_INDICATOR(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'play_indicator')) {
+			midi.sendShortMsg(0x91, 0x07, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x07, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'play_indicator')) {
+			midi.sendShortMsg(0x92, 0x07, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x07, 0x00);
+		}
+	}
+	
+}
+
+function START_PLAY(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'start_play')) {
+			midi.sendShortMsg(0x94, 0x06, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x94, 0x06, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'start_play')) {
+			midi.sendShortMsg(0x95, 0x06, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x95, 0x06, 0x00);
+		}
+	}
+	
+}
+
+function SYNC_ENABLED(value, group, control) {
+	if (group=='[Channel1]'||group=='[Channel3]') {
+		if (engine.getValue(group, 'sync_enabled')) {
+			midi.sendShortMsg(0x91, 0x05, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x91, 0x05, 0x00);
+		}
+	}
+	if (group=='[Channel2]'||group=='[Channel4]') {
+		if (engine.getValue(group, 'sync_enabled')) {
+			midi.sendShortMsg(0x92, 0x05, 0x7f);
+		}
+		else {
+			midi.sendShortMsg(0x92, 0x05, 0x00);
+		}
+	}
+	
+}
+
+
+
+
 
 DJCi200.playButton = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
@@ -364,7 +745,7 @@ DJCi200.scratchScale = 1.0;
 DJCi200.scratchShiftMultiplier = 4;
 
 // How fast bending is.
-DJCi200.bendScale = 1.0;
+DJCi200.bendScale = 1;
 
 // Other scratch related options
 DJCi200.kScratchActionNone = 0;
@@ -576,7 +957,7 @@ DJCi200.wheelTouchShift = function(channel, control, value, _status, _group) {
     if (group == '[Channel4]') {
     	decknum = 4;
     }
-    var deck = decknum - 3;
+    var deck = decknum;
     //var deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
@@ -636,7 +1017,7 @@ DJCi200.scratchWheel = function(channel, control, value, status, _group) {
 // Bending on the jog wheel (rotating using the edge)
 DJCi200.bendWheel = function(channel, control, value, _status, _group) {
     var interval = DJCi200._convertWheelRotation(value);
-    var group = DJCi200.deck[group];
+    var group = DJCi200.deck[_group];
     var decknum = 1;
     if (group == '[Channel1]') {
     	decknum = 1;
@@ -658,4 +1039,6 @@ DJCi200.bendWheel = function(channel, control, value, _status, _group) {
 DJCi200.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x7E);
     midi.sendShortMsg(0x90, 0x04, 0x00);
-};
+}
+DJCi200.initDeck('[Channel1]')
+DJCi200.initDeck('[Channel2]')
