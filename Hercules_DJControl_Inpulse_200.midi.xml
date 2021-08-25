@@ -804,7 +804,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.beatlooproll_1_activate</key>
+                <key>DJCi200.beatloop_1_activate</key>
                 <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x96</status>
                 <midino>0x10</midino>
@@ -814,7 +814,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.beatlooproll_1_activate</key>
+                <key>DJCi200.beatloop_1_activate</key>
                 <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x97</status>
                 <midino>0x10</midino>
@@ -824,7 +824,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.beatlooproll_2_activate</key>
+                <key>DJCi200.beatloop_2_activate</key>
                 <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x96</status>
                 <midino>0x11</midino>
@@ -834,7 +834,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.beatlooproll_2_activate</key>
+                <key>DJCi200.beatloop_2_activate</key>
                 <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x97</status>
                 <midino>0x11</midino>
@@ -844,7 +844,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.beatlooproll_4_activate</key>
+                <key>DJCi200.beatloop_4_activate</key>
                 <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x96</status>
                 <midino>0x12</midino>
@@ -854,7 +854,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.beatlooproll_4_activate</key>
+                <key>DJCi200.beatloop_4_activate</key>
                 <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x97</status>
                 <midino>0x12</midino>
@@ -864,7 +864,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.beatlooproll_8_activate</key>
+                <key>DJCi200.beatloop_8_activate</key>
                 <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x96</status>
                 <midino>0x13</midino>
@@ -874,7 +874,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.beatlooproll_8_activate</key>
+                <key>DJCi200.beatloop_8_activate</key>
                 <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x97</status>
                 <midino>0x13</midino>

@@ -117,10 +117,10 @@ DJCi200.connectDeckControls = function (channel, group, remove) { // This functi
     var controlsToFunctions = { // This hash table maps Mixxx controls to the script functions (not shown in this example) that control LEDs that react to changes in those controls
         'pfl': 'PFL',
         'beatloop_4_enabled': 'BEATLOOP_4_ENABLED',
-        'beatlooproll_1_activate': 'BEATLOOPROLL_1_ACTIVATE',
-        'beatlooproll_2_activate': 'BEATLOOPROLL_2_ACTIVATE',
-        'beatlooproll_4_activate': 'BEATLOOPROLL_4_ACTIVATE',
-        'beatlooproll_8_activate': 'BEATLOOPROLL_8_ACTIVATE',
+        'beatloop_1_toggle': 'BEATLOOP_1_toggle',
+        'beatloop_2_toggle': 'BEATLOOP_2_toggle',
+        'beatloop_4_toggle': 'BEATLOOP_4_toggle',
+        'beatloop_8_toggle': 'BEATLOOP_8_toggle',
         'cue_indicator': 'CUE_INDICATOR',
         'end_of_track': 'END_OF_TRACK',
         'hotcue_1_enabled': 'HOTCUE_1_ENABLED',
@@ -221,9 +221,9 @@ function BEATLOOP_4_ENABLED(value, group, control) {
 	
 }
 
-function BEATLOOPROLL_1_ACTIVATE(value, group, control) {
+function BEATLOOP_1_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
-		if (engine.getValue(group, 'beatlooproll_1_activate')) {
+		if (engine.getValue(group, 'beatloop_1_enabled')) {
 			midi.sendShortMsg(0x96, 0x10, 0x7f);
 		}
 		else {
@@ -231,7 +231,7 @@ function BEATLOOPROLL_1_ACTIVATE(value, group, control) {
 		}
 	}
 	if (group=='[Channel2]'||group=='[Channel4]') {
-		if (engine.getValue(group, 'beatlooproll_1_activate')) {
+		if (engine.getValue(group, 'beatloop_1_enabled')) {
 			midi.sendShortMsg(0x97, 0x10, 0x7f);
 		}
 		else {
@@ -241,9 +241,9 @@ function BEATLOOPROLL_1_ACTIVATE(value, group, control) {
 	
 }
 
-function BEATLOOPROLL_2_ACTIVATE(value, group, control) {
+function BEATLOOP_2_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
-		if (engine.getValue(group, 'beatlooproll_2_activate')) {
+		if (engine.getValue(group, 'beatloop_2_enabled')) {
 			midi.sendShortMsg(0x96, 0x11, 0x7f);
 		}
 		else {
@@ -251,7 +251,7 @@ function BEATLOOPROLL_2_ACTIVATE(value, group, control) {
 		}
 	}
 	if (group=='[Channel2]'||group=='[Channel4]') {
-		if (engine.getValue(group, 'beatlooproll_2_activate')) {
+		if (engine.getValue(group, 'beatloop_2_enabled')) {
 			midi.sendShortMsg(0x97, 0x11, 0x7f);
 		}
 		else {
@@ -261,9 +261,9 @@ function BEATLOOPROLL_2_ACTIVATE(value, group, control) {
 	
 }
 
-function BEATLOOPROLL_4_ACTIVATE(value, group, control) {
+function BEATLOOP_4_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
-		if (engine.getValue(group, 'beatlooproll_4_activate')) {
+		if (engine.getValue(group, 'beatloop_4_enabled')) {
 			midi.sendShortMsg(0x96, 0x12, 0x7f);
 		}
 		else {
@@ -271,7 +271,7 @@ function BEATLOOPROLL_4_ACTIVATE(value, group, control) {
 		}
 	}
 	if (group=='[Channel2]'||group=='[Channel4]') {
-		if (engine.getValue(group, 'beatlooproll_4_activate')) {
+		if (engine.getValue(group, 'beatloop_4_enabled')) {
 			midi.sendShortMsg(0x97, 0x12, 0x7f);
 		}
 		else {
@@ -281,9 +281,9 @@ function BEATLOOPROLL_4_ACTIVATE(value, group, control) {
 	
 }
 
-function BEATLOOPROLL_8_ACTIVATE(value, group, control) {
+function BEATLOOP_8_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
-		if (engine.getValue(group, 'beatlooproll_8_activate')) {
+		if (engine.getValue(group, 'beatloop_8_enabled')) {
 			midi.sendShortMsg(0x96, 0x13, 0x7f);
 		}
 		else {
@@ -291,7 +291,7 @@ function BEATLOOPROLL_8_ACTIVATE(value, group, control) {
 		}
 	}
 	if (group=='[Channel2]'||group=='[Channel4]') {
-		if (engine.getValue(group, 'beatlooproll_8_activate')) {
+		if (engine.getValue(group, 'beatloop_8_enabled')) {
 			midi.sendShortMsg(0x97, 0x13, 0x7f);
 		}
 		else {
@@ -517,10 +517,7 @@ DJCi200.playButton = function (channel, control, value, status, group) {
 
 DJCi200.hotcue_1_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
-        // toggle whether the deck is playing
-        engine.setValue(group, 'hotcue_1_activate', ! (engine.getValue(group, 'hotcue_1_activate')))
-    }
+    engine.setValue(group, 'hotcue_1_activate', value);
 }
 
 DJCi200.volume = function (channel, control, value, status, group) {
@@ -533,26 +530,17 @@ DJCi200.volume = function (channel, control, value, status, group) {
 
 DJCi200.hotcue_2_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
-        // toggle whether the deck is playing
-        engine.setValue(group, 'hotcue_2_activate', ! (engine.getValue(group, 'hotcue_2_activate')))
-    }
+    engine.setValue(group, 'hotcue_2_activate', value);
 }
 
 DJCi200.hotcue_3_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
-        // toggle whether the deck is playing
-        engine.setValue(group, 'hotcue_3_activate', ! (engine.getValue(group, 'hotcue_3_activate')))
-    }
+    engine.setValue(group, 'hotcue_3_activate', value);
 }
 
 DJCi200.hotcue_4_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
-        // toggle whether the deck is playing
-        engine.setValue(group, 'hotcue_4_activate', ! (engine.getValue(group, 'hotcue_4_activate')))
-    }
+    engine.setValue(group, 'hotcue_4_activate', value);
 }
 
 DJCi200.sync_enabled = function (channel, control, value, status, group) {
@@ -683,35 +671,36 @@ DJCi200.LoadSelectedTrack = function (channel, control, value, status, group) {
     }
 }
 
-DJCi200.beatlooproll_1_activate = function (channel, control, value, status, group) {
+DJCi200.beatloop_1_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatlooproll_1_activate', ! (engine.getValue(group, 'beatlooproll_1_activate')))
+	engine.setValue(group, 'beatloop_1_toggle', true)
+        //engine.setValue(group, 'beatloop_1_toggle', ! (engine.getValue(group, 'beatloop_1_toggle')))
     }
 }
 
-DJCi200.beatlooproll_2_activate = function (channel, control, value, status, group) {
+DJCi200.beatloop_2_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatlooproll_2_activate', ! (engine.getValue(group, 'beatlooproll_2_activate')))
+        engine.setValue(group, 'beatloop_2_toggle', ! (engine.getValue(group, 'beatloop_2_toggle')))
     }
 }
 
-DJCi200.beatlooproll_4_activate = function (channel, control, value, status, group) {
+DJCi200.beatloop_4_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatlooproll_4_activate', ! (engine.getValue(group, 'beatlooproll_4_activate')))
+        engine.setValue(group, 'beatloop_4_toggle', ! (engine.getValue(group, 'beatloop_4_toggle')))
     }
 }
 
-DJCi200.beatlooproll_8_activate = function (channel, control, value, status, group) {
+DJCi200.beatloop_8_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatlooproll_8_activate', ! (engine.getValue(group, 'beatlooproll_8_activate')))
+        engine.setValue(group, 'beatloop_8_toggle', ! (engine.getValue(group, 'beatloop_8_toggle')))
     }
 }
 
