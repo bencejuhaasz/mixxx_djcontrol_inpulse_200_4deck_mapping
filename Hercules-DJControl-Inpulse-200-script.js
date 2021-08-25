@@ -561,10 +561,11 @@ DJCi200.sync_master = function (channel, control, value, status, group) {
 
 DJCi200.cue_default = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
+    engine.setValue(group, 'cue_default', value);
+    /*if (value) {
         // toggle whether the deck is playing
         engine.setValue(group, 'cue_default', ! (engine.getValue(group, 'cue_default')))
-    }
+    }*/
 }
 
 DJCi200.start_play = function (channel, control, value, status, group) {
