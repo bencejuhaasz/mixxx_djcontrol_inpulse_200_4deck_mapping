@@ -544,7 +544,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.beatloop_4_activate</key>
+                <key>DJCi200.loop_halve</key>
                 <description>Loop In button</description>
                 <status>0x91</status>
                 <midino>0x09</midino>
@@ -554,7 +554,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.beatloop_4_activate</key>
+                <key>DJCi200.loop_halve</key>
                 <description>Loop In button</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
@@ -624,7 +624,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJCi200.reloop_toggle</key>
+                <key>DJCi200.loop_double</key>
                 <description>Loop Out button</description>
                 <status>0x91</status>
                 <midino>0x0A</midino>
@@ -634,7 +634,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJCi200.reloop_toggle</key>
+                <key>DJCi200.loop_double</key>
                 <description>Loop Out button</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>

@@ -116,7 +116,6 @@ DJCi200.connectDeckControls = function (channel, group, remove) { // This functi
     remove = (typeof remove !== 'undefined') ? remove : false // If the 'remove' parameter is not passed to this function, set remove = false
     var controlsToFunctions = { // This hash table maps Mixxx controls to the script functions (not shown in this example) that control LEDs that react to changes in those controls
         'pfl': 'PFL',
-        'beatloop_4_enabled': 'BEATLOOP_4_ENABLED',
         'beatloop_1_toggle': 'BEATLOOP_1_toggle',
         'beatloop_2_toggle': 'BEATLOOP_2_toggle',
         'beatloop_4_toggle': 'BEATLOOP_4_toggle',
@@ -604,7 +603,7 @@ DJCi200.beatloop_4_activate = function (channel, control, value, status, group) 
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatloop_4_activate', ! (engine.getValue(group, 'beatloop_4_activate')))
+        engine.setValue(group, 'beatloop_4_activate', true)
     }
 }
 
@@ -628,7 +627,7 @@ DJCi200.reloop_toggle = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'reloop_toggle', ! (engine.getValue(group, 'reloop_toggle')))
+        engine.setValue(group, 'reloop_toggle', true)
     }
 }
 
@@ -685,7 +684,8 @@ DJCi200.beatloop_2_activate = function (channel, control, value, status, group) 
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatloop_2_toggle', ! (engine.getValue(group, 'beatloop_2_toggle')))
+	engine.setValue(group, 'beatloop_2_toggle', true)
+        //engine.setValue(group, 'beatloop_1_toggle', ! (engine.getValue(group, 'beatloop_1_toggle')))
     }
 }
 
@@ -693,7 +693,8 @@ DJCi200.beatloop_4_activate = function (channel, control, value, status, group) 
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatloop_4_toggle', ! (engine.getValue(group, 'beatloop_4_toggle')))
+	engine.setValue(group, 'beatloop_4_toggle', true)
+        //engine.setValue(group, 'beatloop_1_toggle', ! (engine.getValue(group, 'beatloop_1_toggle')))
     }
 }
 
@@ -701,7 +702,8 @@ DJCi200.beatloop_8_activate = function (channel, control, value, status, group) 
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
     if (value) {
         // toggle whether the deck is playing
-        engine.setValue(group, 'beatloop_8_toggle', ! (engine.getValue(group, 'beatloop_8_toggle')))
+	engine.setValue(group, 'beatloop_8_toggle', true)
+        //engine.setValue(group, 'beatloop_1_toggle', ! (engine.getValue(group, 'beatloop_1_toggle')))
     }
 }
 
