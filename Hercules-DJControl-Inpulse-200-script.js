@@ -224,6 +224,9 @@ function BEATLOOP_1_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
 		if (engine.getValue(group, 'beatloop_1_enabled')) {
 			midi.sendShortMsg(0x96, 0x10, 0x7f);
+			midi.sendShortMsg(0x96, 0x11, 0x00);
+			midi.sendShortMsg(0x96, 0x12, 0x00);
+			midi.sendShortMsg(0x96, 0x13, 0x00);
 		}
 		else {
 			midi.sendShortMsg(0x96, 0x10, 0x00);
@@ -244,6 +247,9 @@ function BEATLOOP_2_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
 		if (engine.getValue(group, 'beatloop_2_enabled')) {
 			midi.sendShortMsg(0x96, 0x11, 0x7f);
+			midi.sendShortMsg(0x96, 0x10, 0x00);
+                        midi.sendShortMsg(0x96, 0x12, 0x00);
+                        midi.sendShortMsg(0x96, 0x13, 0x00);
 		}
 		else {
 			midi.sendShortMsg(0x96, 0x11, 0x00);
@@ -264,6 +270,9 @@ function BEATLOOP_4_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
 		if (engine.getValue(group, 'beatloop_4_enabled')) {
 			midi.sendShortMsg(0x96, 0x12, 0x7f);
+			midi.sendShortMsg(0x96, 0x11, 0x00);
+                        midi.sendShortMsg(0x96, 0x10, 0x00);
+                        midi.sendShortMsg(0x96, 0x13, 0x00);
 		}
 		else {
 			midi.sendShortMsg(0x96, 0x12, 0x00);
@@ -284,6 +293,9 @@ function BEATLOOP_8_toggle(value, group, control) {
 	if (group=='[Channel1]'||group=='[Channel3]') {
 		if (engine.getValue(group, 'beatloop_8_enabled')) {
 			midi.sendShortMsg(0x96, 0x13, 0x7f);
+			midi.sendShortMsg(0x96, 0x11, 0x00);
+                        midi.sendShortMsg(0x96, 0x12, 0x00);
+                        midi.sendShortMsg(0x96, 0x10, 0x00);
 		}
 		else {
 			midi.sendShortMsg(0x96, 0x13, 0x00);
