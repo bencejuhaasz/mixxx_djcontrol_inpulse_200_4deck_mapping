@@ -532,11 +532,23 @@ function SYNC_ENABLED(value, group, control) {
 
 DJCi200.playButton = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
-    if (value) {
-        // toggle whether the deck is playing
-        engine.setValue(group, 'play', ! (engine.getValue(group, 'play')))
+    var deck = parseInt(group.substring(8,9));
+    if(value) {
+        if(engine.getValue(group,'play')) {
+        if(engine.getValue(group,'brake')) {
+        	engine.brake(deck, false);
+        	engine.softStart(deck, true,10);
+        }
+        	engine.brake(deck, true,10);
+        } else {
+        engine.brake(deck, false);
+        	engine.softStart(deck, true,10);
+        }   	
+    } else {
+    	//engine.softStart(deck, false);
     }
 }
+
 
 DJCi200.hotcue_1_activate = function (channel, control, value, status, group) {
     group = DJCi200.deck[group] // Change the value of the group variable to the deck we actually want to manipulate based on the state of the deck toggle button
